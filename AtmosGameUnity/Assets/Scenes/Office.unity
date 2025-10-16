@@ -936,7 +936,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 783b1635d006baf4aa5bf58f7577eca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StickmanController
-  moveSpeed: 5
+  walkSpeed: 3
+  sprintSpeed: 6
   gravity: -9.81
   rotationSpeed: 2
   jumpHeight: 2

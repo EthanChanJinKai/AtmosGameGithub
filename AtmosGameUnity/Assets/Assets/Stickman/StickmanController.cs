@@ -4,19 +4,23 @@ using UnityEngine;
 public class StickmanController : MonoBehaviour
 {
     
-    public float moveSpeed = 5.0f;
-    public float gravity = -9.81f;
+    public float walkSpeed = 3.0f;
+    public float sprintSpeed = 6.0f;
 
+    public float gravity = -9.81f;
     public float rotationSpeed = 2.0f;
 
     public float jumpHeight = 2.0f;
+
     private bool isJumping = false; 
 
     
     private CharacterController characterController;
     private Animator animator; 
     private Vector3 velocity; 
-    private Vector3 currentMove; 
+    private Vector3 currentMomentum;
+
+    private float currentMoveSpeed;
 
     void Start()
     {
@@ -33,6 +37,15 @@ public class StickmanController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
         transform.Rotate(Vector3.up * mouseX);
 
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            currentMoveSpeed = sprintSpeed;
+        }
+        else
+        {
+            currentMoveSpeed = walkSpeed;
+        }
+
         float horizontalInput = Input.GetAxis("Horizontal"); // A/D
         float verticalInput = Input.GetAxis("Vertical");   // W/S
 
@@ -40,16 +53,16 @@ public class StickmanController : MonoBehaviour
 
         if (desiredMove.magnitude >= 0.1f)
         {
-            currentMove = desiredMove.normalized;
+            currentMomentum = desiredMove.normalized;
         }
         else if (characterController.isGrounded)
         {
             
-            currentMove = Vector3.zero;
+            currentMomentum = Vector3.zero;
         }
 
-        velocity.x = currentMove.x * moveSpeed;
-        velocity.z = currentMove.z * moveSpeed;
+        velocity.x = currentMomentum.x * currentMoveSpeed;
+        velocity.z = currentMomentum.z * currentMoveSpeed;
 
         
 
@@ -65,6 +78,8 @@ public class StickmanController : MonoBehaviour
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
                 isJumping = true;
+
+                animator.SetTrigger("JumpTrigger");
             }
         }
         else
@@ -76,7 +91,7 @@ public class StickmanController : MonoBehaviour
 
         float currentHorizontalSpeed = new Vector3(characterController.velocity.x, 0, characterController.velocity.z).magnitude;
 
-        float speedPercent = Mathf.Min(1.0f, currentHorizontalSpeed / moveSpeed);
+        float speedPercent = Mathf.Min(1.0f, currentHorizontalSpeed / sprintSpeed);
 
         animator.SetFloat("SpeedPercent", speedPercent);
 
